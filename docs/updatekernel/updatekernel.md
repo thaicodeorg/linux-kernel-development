@@ -74,6 +74,8 @@ git tag -l  | grep v6
 git checkout -b v6.15
 git branch
 
+uname -r
+
 cp /boot/config-`uname -r` .config
 ```
 
@@ -89,7 +91,7 @@ make clean
 
 ### Compile kernel
 ```
-make -j$(nproc)
+echo "y" | make -j$(nproc)
 sudo make modules_install
 sudo make install
 ```
