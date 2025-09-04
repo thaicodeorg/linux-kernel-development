@@ -180,18 +180,24 @@ scripts/config --set-str SYSTEM_REVOCATION_KEYS  ""
 
 - **แบบที่ 2** สามารถรวมคำสั่งพร้อมการจับเวลา และ สร้าง log (แนะนำวิธีนี้)  
     - ต้องการ จับเวลาว่าใช้เวลาไปเท่าไหร่ด้วย nproc=8 ทำให้มีความเร็วเมื่อมีการ Build kernel
-```
+```bash title="build kernel"
 # time make -j$(nproc) 2>&1 | tee build-0.log
 # time make -d modules_install install 2>&1 | tee make-install-0.log
-
-
-# make -j$(nproc) deb-pkg
+```
+    - สร้าง deb package
+```bash title="build package"
+# sudo apt install debhelper-compat libdw-dev
+# time make -j$(nproc) deb-pkg
 ```
 
 - เมื่อสิ้นสุดจะได้ .deb files อยู่ที่  (../)
-
+```bash title="list package"
+cd  ../
+ls -l
+```
+Screen output:  
 ![](./images/2_updatekernel10.png)
-(time make -j$(nproc) 2>&1 | tee build-0.log)
+<sub>(time make -j$(nproc) 2>&1 | tee build-0.log)<sub>
 
 อธิบายค่าแต่ละค่า ของ output time:
 
@@ -204,10 +210,10 @@ scripts/config --set-str SYSTEM_REVOCATION_KEYS  ""
 - user + sys (559m + 106m = 665m) มากกว่า real (91m) มาก
 - นี่แสดงว่ากระบวนการของคุณใช้ multi-core/parallel processing อย่างมีประสิทธิภาพ โดยใช้หลาย CPU core พร้อมกัน ทำให้ประมวลผลเสร็จเร็วกว่าเวลาที่ CPU ใช้จริงๆ
 
-```
-cd ..
-ls *.deb
-```
+![](./images/2_updatekernel11.png)
+<sub>(time make -d modules_install install 2>&1 | tee make-install-0.log)<sub>
+
+
 
 ### Reboot เพื่อใช้ Kernel ใหม่
 ```
