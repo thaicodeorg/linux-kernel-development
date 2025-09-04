@@ -1,4 +1,4 @@
-# Build kernel module 2
+# สร้าง kernel module 2
 
 ### เครื่องมือสำหรับการคอมไพล์
 ```

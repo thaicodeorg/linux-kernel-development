@@ -1,4 +1,4 @@
-# Build kernel module 1
+# สร้าง kernel module 1
 
 !!! note
     ถ้าไม่ได้มีการ Build kernel ก็ให้ ติตตั้ง kernel
