@@ -3,7 +3,9 @@
 ![](./images/2_updatekernel2.png)
 [https://kernel.org/](https://kernel.org/)
 
-## Ubuntu 24.04
+## Ubuntu 24.04  (8 cpu)
+
+![](./images/timeline.png)
 
 ### Step 1: Check Current kernel Version
 ```
@@ -19,27 +21,38 @@ sudo apt update -y
 ### Step 3: Upgrade Package
 ```
 sudo apt upgrade -y
-
-sudo apt  install pkexec -y
 uname -r
 ```
+
+![](./images/2_updatekernel8.png)
 
 ### Step 4: Reboot
 ```
 $ sudo reboot
 ```
-
-### Step 5: Install mainline kernel in Ubuntu โดย ติดตั้งจาก unofficial PPA
+- Check version อีกครั้ง  จะได้ว่า ``apt upgrade`` ทำการ update kernel
 ```
+$ uname -r
+6.8.0-79-generic
+```
+
+### Step 5: ติดตั้ง mainline kernel 6.16 โดย ติดตั้งจาก unofficial PPA
+```
+$ sudo apt  install pkexec -y
 $ sudo add-apt-repository ppa:cappelikan/ppa
-$ sudo apt update && sudo apt install mainline
+$ sudo apt update && sudo apt install mainline -y
 $ sudo apt upgrade -y
 ```
-
+- ให้ Run คำสั่ง ข้างล่างเพื่อ Update kernel (6.16.4)
 ```
 $ mainline check
 $ sudo mainline install-latest
 $ sudo update-grub
+$ sudo reboot
+```
+
+```
+$ uname -r
 ```
 
 ![](./images/2_updatekernel7.png)
@@ -53,72 +66,116 @@ sudo reboot
 ### Step6 Check Version
 ```
 $ uname -r
+6.16.4-061604-generic
+
 $ sudo apt install linux-headers-$(uname -r)
+
+$ ls /usr/src/linux-headers-$(uname -r)/
 ```
+- kernel release number ``major#.minor#[.patchlevel][-EXTRAVERSION]``
+  
+- release version และ การ Release ของ linux kernel
+  
+![](./images/B18477_02_03.png)
 
-### Step 7 
-
+![](./images/2_updatekernel9.png)
+- ตำแหน่งที่ติดตั้ง kernel source
+  
+### Step 7 kernel และ grub
+- ตำแหน่งที่ เก็บ kernel  /boot
 ![](./images/2_updatekernel1.png)
 
----
-## Build Kernel
+- ตรวจสอบ Grub entry
+```bash
+# Search for menu entries
+sudo grep  --color  -i "menuentry" /boot/grub/grub.cfg
 
+# Search for the Linux kernel versions listed
+sudo grep --color -i "linux" /boot/grub/grub.cfg | grep -i "vmlinuz"
+
+# Search for the specific version you just updated to
+sudo grep --color -i "6.16" /boot/grub/grub.cfg
 ```
-$ sudo apt install -y build-essential libncurses-dev bison flex libssl-dev libelf-dev fakeroot bc
+---
+## ขั้นตอน สำคัญ Build Kernel
+- ติดตั้ง โปรแกรมเพิ่มให้รองรับการ compile kernel ก่อน
+```
+$ sudo apt install -y build-essential libncurses-dev bison \
+flex libssl-dev libelf-dev fakeroot bc
 $ sudo apt install -y dwarves
 ```
 
 ### Clone Linux kernel และ บริหารจัดการ Branch จาก Git
+- สร้าง Folder ``/usr/src/build`` ่ เพื่อรองรับการ Clone source code จาก Git
+- clone source code
 ```
 sudo su -
 mkdir /usr/src/build
 cd /usr/src/build
-git clone  git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+git clone --depth 1 git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
 cd linux
 git branch
-git tag -l
-
 ```
+- option การ Clone ของ Git ``--depth 1``  เฉพาะ master
+- ``[git://](git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git)`` ใช้  git protocol
+- ``git@github.com:torvalds/linux.git``  ใช้ ssh protocol
+  
 
-### Generate Default config
+### copy  config ล่าสุดเพื่อบันทึก เป็น .config
 ```
 # uname -r
+(result)
 6.16.4-061604-generic
 
 # cp -v /boot/config-$(uname -r) .config
+(result)
 '/boot/config-6.16.4-061604-generic' -> '.config'
 
 # yes '' | make oldconfig
 
 # make clean
 ```
-
-### Disable kernel parameter
-[https://wiki.debian.org/BuildADebianKernelPackage](https://wiki.debian.org/BuildADebianKernelPackage)
-
+- ``yes ''`` หมายถึงการยอมรับทั้งหมด
+- 
+### ต่อไปเป็นการ Disable kernel parameter
+- ref จาก Debian Community [https://wiki.debian.org/BuildADebianKernelPackage](https://wiki.debian.org/BuildADebianKernelPackage)  
+- ภายใน ``scripts/`` มี script เพื่อการตั้งค่า configuration
+- สำรวจ scripts ก่อน
+```
+ls -l scripts/
+```
+- การ disable คือ กำหนด ให้เป็นค่าว่าง ""
 ```
 scripts/config --set-str SYSTEM_TRUSTED_KEYS ""
 scripts/config --set-str SYSTEM_REVOCATION_KEYS  ""
 ```
 
+### ต่อไปเป็นการ Build kernel
+1. - ก่อนการ Build ให้เราตั้งชื่อ kernel ที่ต้องการ Build
+1. make menuconfig
+    1. Genral setup --> Local Version --> กด Enter เพื่อตั้งขื่อ  ``-Nipa``
+    1. กด tab เพื่อเลื่อน Cusrsor ไปยัง เมนู Save และ กด Enter
+
+![](./images/nipa.png)
+- กด ``ok``
+  
+- **แบบที่ 1** ไม่จับเวลา ไม่มี log
 ```
 # make -j$(nproc)
 # make -j$(nproc) modules_install
 # make -j$(nproc) install
-# make -j$(nproc) bindeb-pkg
-
-apt install ../*.deb
 ```
 
-### สามารถรวมคำสั่งพร้อมการจับเวลา และ สร้าง log
+- **แบบที่ 2** สามารถรวมคำสั่งพร้อมการจับเวลา และ สร้าง log (แนะนำวิธีนี้)  
+    - ต้องการ จับเวลาว่าใช้เวลาไปเท่าไหร่ด้วย nproc=8 ทำให้มีความเร็วเมื่อมีการ Build kernel
 ```
 time make -j$(nproc) 2>&1 | tee build-0.log
 time make -d modules_install install 2>&1 | tee make-install-0.log
 ```
 
-### Reboot
+### Reboot เพื่อใช้ Kernel ใหม่
 ```
-reboot
+sudo reboot
 ```
 
 ![](./images/2_updatekernel3.png)

@@ -1,6 +1,6 @@
 # พื้นที่ ใช้งานของ Kernel Space 
 ## ทบทวน Linux File system
-![](./images/Linux-Directory-Structure.jpeg)
+![](./images/linux-filesystem.gif)
 
 ## ภาพรวมของ /proc 
 ![](./images/proc-chart.png)
