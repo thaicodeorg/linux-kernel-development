@@ -1,5 +1,5 @@
-# Update Kernel
-
+# การ Update Kernel ubuntu
+- Kernel version ล่าสุด  (3 กันยายน 2025)
 ![](./images/2_updatekernel2.png)
 [https://kernel.org/](https://kernel.org/)
 
@@ -31,16 +31,21 @@ $ sudo reboot
 
 ### Step 5: Install mainline kernel in Ubuntu โดย ติดตั้งจาก unofficial PPA
 ```
-sudo add-apt-repository ppa:cappelikan/ppa
-sudo apt update && sudo apt install mainline
+$ sudo add-apt-repository ppa:cappelikan/ppa
+$ sudo apt update && sudo apt install mainline
+$ sudo apt upgrade -y
 ```
 
 ```
 $ mainline check
 $ sudo mainline install-latest
+$ sudo update-grub
 ```
 
-- **Reboot**
+![](./images/2_updatekernel7.png)
+- kernel verion  (6.16.4-061604.202508281650) 3/9/2025
+
+- **Reboot** เพื่อโหลด Kernel
 ```
 sudo reboot
 ```
@@ -59,49 +64,77 @@ $ sudo apt install linux-headers-$(uname -r)
 ## Build Kernel
 
 ```
-$ sudo apt install -y build-essential libncu
-rses-dev bison flex libssl-dev libelf-dev fakeroot
+$ sudo apt install -y build-essential libncurses-dev bison flex libssl-dev libelf-dev fakeroot bc
 $ sudo apt install -y dwarves
 ```
 
-### Clone และ บริหารจัดการ Branch จาก Git
+### Clone Linux kernel และ บริหารจัดการ Branch จาก Git
 ```
-cd ~
-git clone git clone git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+sudo su -
+mkdir /usr/src/build
+cd /usr/src/build
+git clone  git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
 cd linux
-git tag -l  | grep v6
-
-git checkout -b v6.15
 git branch
-
-uname -r
-
-cp /boot/config-`uname -r` .config
-```
-
-### ยอมรับ Old Config สำหรับการ Build kernel
-```
-make oldconfig
-```
+git tag -l
 
 ```
-make menuconfig
-make clean
+
+### Generate Default config
+```
+# uname -r
+6.16.4-061604-generic
+
+# cp -v /boot/config-$(uname -r) .config
+'/boot/config-6.16.4-061604-generic' -> '.config'
+
+# yes '' | make oldconfig
+
+# make clean
 ```
 
-### Compile kernel
+### Disable kernel parameter
+[https://wiki.debian.org/BuildADebianKernelPackage](https://wiki.debian.org/BuildADebianKernelPackage)
+
 ```
-echo "y" | make -j$(nproc)
-sudo make modules_install
-sudo make install
+scripts/config --set-str SYSTEM_TRUSTED_KEYS ""
+scripts/config --set-str SYSTEM_REVOCATION_KEYS  ""
 ```
+
+```
+# make -j$(nproc)
+# make -j$(nproc) modules_install
+# make -j$(nproc) install
+# make -j$(nproc) bindeb-pkg
+
+apt install ../*.deb
+```
+
+### สามารถรวมคำสั่งพร้อมการจับเวลา และ สร้าง log
+```
+time make -j$(nproc) 2>&1 | tee build-0.log
+time make -d modules_install install 2>&1 | tee make-install-0.log
+```
+
+### Reboot
+```
+reboot
+```
+
+![](./images/2_updatekernel3.png)
+
+
+
+1. ``2>&1`` means "redirect standard error to the same place as standard output." This ensures that both regular progress messages and error messages are treated as a single stream of data.
+2. tee build.log: The tee command is named after a T-splitter in plumbing. It takes the input it receives and splits it into two directions:
+    1. It prints the output to the screen (standard output), so you can watch the build progress in real time.
+    2. It saves a copy of the output to the specified file, build.log.
 
 ### update bootloader สำหรับการยอมรับ Kernel ใหม่
 ```
 sudo update-grub
 ```
 
----
 
 สรุปสั้นๆ คือ `modules_install` เป็นการติดตั้ง **"ไดรเวอร์และส่วนประกอบเสริม"** ส่วน `install` เป็นการติดตั้ง **"แกนหลักของเคอร์เนลและตั้งค่าการบูต"** ครับ
 
@@ -116,6 +149,9 @@ sudo update-grub
 
 **สรุปหน้าที่:** คัดลอกไฟล์ไดรเวอร์ทั้งหมดไปไว้ในที่ที่ระบบปฏิบัติการพร้อมเรียกใช้งาน
 
+![](./images/2_updatekernel4.png)
+
+![](./images/2_updatekernel5.pngcl)
 ---
 
 ### **2. `sudo make install` (ติดตั้งแกนหลัก)**
@@ -137,3 +173,10 @@ sudo update-grub
 * `make modules_install` คือการ **"ติดตั้งอุปกรณ์เสริม"** เช่น ระบบเครื่องเสียง, แอร์, GPS เข้าไปในรถ
 * `make install` คือการ **"นำรถไปจอดในโรงรถและทำกุญแจให้"** เพื่อให้คุณพร้อมที่จะสตาร์ทและขับรถคันนั้นได้
 
+
+### List Kernel Module
+```
+# lsmod
+```
+
+![](./images/2_updatekernel6.png)
