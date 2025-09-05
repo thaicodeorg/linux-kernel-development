@@ -188,6 +188,7 @@ scripts/config --set-str SYSTEM_REVOCATION_KEYS  ""
 ```bash title="build package"
 # sudo apt install debhelper-compat libdw-dev
 # time make -j$(nproc) deb-pkg
+# time make -j$(nproc) deb-pkg LOCALVERSION=-Nipa KDEB_PKGVERSION=$(make kernelversion)-1
 ```
 
 - เมื่อสิ้นสุดจะได้ .deb files อยู่ที่  (../)
@@ -214,6 +215,10 @@ Screen output:
 <sub>(time make -d modules_install install 2>&1 | tee make-install-0.log)<sub>
 
 
+### update bootloader สำหรับการยอมรับ Kernel ใหม่
+```
+sudo update-grub
+```
 
 ### Reboot เพื่อใช้ Kernel ใหม่
 ```
@@ -229,13 +234,13 @@ sudo reboot
     1. It prints the output to the screen (standard output), so you can watch the build progress in real time.
     2. It saves a copy of the output to the specified file, build.log.
 
-### update bootloader สำหรับการยอมรับ Kernel ใหม่
-```
-sudo update-grub
-```
 
 
-สรุปสั้นๆ คือ `modules_install` เป็นการติดตั้ง **"ไดรเวอร์และส่วนประกอบเสริม"** ส่วน `install` เป็นการติดตั้ง **"แกนหลักของเคอร์เนลและตั้งค่าการบูต"** ครับ
+
+สรุปคำสั่ง 
+
+-  `modules_install` เป็นการติดตั้ง **"ไดรเวอร์และส่วนประกอบเสริม"** 
+-  ส่วน `install` เป็นการติดตั้ง **"แกนหลักของเคอร์เนลและตั้งค่าการบูต"** 
 
 ---
 
