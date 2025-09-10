@@ -187,8 +187,8 @@ scripts/config --set-str SYSTEM_REVOCATION_KEYS  ""
     - สร้าง deb package
 ```bash title="build package"
 # sudo apt install debhelper-compat libdw-dev
+# grep CONFIG_LOCALVERSION .config
 # time make -j$(nproc) deb-pkg
-# time make -j$(nproc) deb-pkg LOCALVERSION=-Nipa KDEB_PKGVERSION=$(make kernelversion)-1
 ```
 
 - เมื่อสิ้นสุดจะได้ .deb files อยู่ที่  (../)
