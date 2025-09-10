@@ -1,5 +1,18 @@
 # 01 Introduction Memory management part 1
 
+!!! note "ประยุกต์การใช้ fzf ร่วมกับ vim"
+      $ sudo apt install fzf  -y
+      $ cd /usr/src/build/linux  
+      $ vim -c "set number" $(fzf)  
+
+      # เพิ่มบรรทัดนี้ในไฟล์ ~/.bashrc หรือ ~/.zshrc  
+      $ vim ~/.bashrc  
+      $ alias vimfzf='vim -c "set number" $(fzf)'   
+      $ source ~/.bashrc    
+      $ vimfzf  
+
+![](./images/memory_layout_in_c_inside.webp)
+
 ## Single Memory Address space Arm Cortex microcontroller
 
 ![](./images/ARM-Microcontroller-9.png)

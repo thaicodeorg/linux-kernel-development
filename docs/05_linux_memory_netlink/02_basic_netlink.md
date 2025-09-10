@@ -467,7 +467,7 @@ int main() {
 ```
 
 **วิธีใช้งาน:**
-```Makefile title="Makefile"
+```makefile title="Makefile"
 
 # Compiler ที่จะใช้ (ปกติคือ gcc)
 CC = gcc
