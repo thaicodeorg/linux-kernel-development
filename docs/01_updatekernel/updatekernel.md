@@ -143,11 +143,22 @@ git branch
 '/boot/config-6.16.4-061604-generic' -> '.config'
 
 # yes '' | make oldconfig
-
+# sed -i "s|CONFIG_LOCALVERSION_AUTO=.*|CONFIG_LOCALVERSION_AUTO=n|" .config
 # make clean
 ```
-- ``yes ''`` หมายถึงการยอมรับทั้งหมด
-- 
+
+!!! note
+    option ``yes ''`` หมายถึงการยอมรับทั้งหมด
+
+```bash title="remove + from custombuild"
+vim scripts/localversion
+
+                        if $short; then
+                                #echo "+" #comment this line
+                                return
+                        fi
+```
+
 ### ต่อไปเป็นการ Disable kernel parameter
 - ref จาก Debian Community [https://wiki.debian.org/BuildADebianKernelPackage](https://wiki.debian.org/BuildADebianKernelPackage)  
 - ภายใน ``scripts/`` มี script เพื่อการตั้งค่า configuration
@@ -184,7 +195,13 @@ scripts/config --set-str SYSTEM_REVOCATION_KEYS  ""
 # time make -j$(nproc) 2>&1 | tee build-0.log
 # time make -d modules_install install 2>&1 | tee make-install-0.log
 ```
-    - สร้าง deb package
+
+- one line command
+```
+time make -j$(nproc) 2>&1 | tee build-0.log && time make -d modules_install install 2>&1 | tee make-install-0.log
+```
+
+- สร้าง deb package
 ```bash title="build package"
 # sudo apt install debhelper-compat libdw-dev
 # grep CONFIG_LOCALVERSION .config
