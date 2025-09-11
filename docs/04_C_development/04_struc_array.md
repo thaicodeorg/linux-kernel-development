@@ -9,9 +9,16 @@
 
 -----
 
-### ตัวอย่างโค้ด
+### Code
 
-```c
+```
+cd c-develop
+vim struct_array.c
+gcc struct_array.c -o struct_array.c
+```
+
+```c title="struct_array.c"
+//File struct_array.c
 #include <stdio.h>
 #include <unistd.h> // สำหรับฟังก์ชัน sleep() เพื่อจำลองการทำงาน
 
@@ -96,6 +103,8 @@ int main() {
     return 0;
 }
 ```
+
+![](./images/struct_array.png)
 
 ### คำอธิบายเชิงลึก
 

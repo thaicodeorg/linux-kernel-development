@@ -93,7 +93,16 @@ strcpy(s1.name, "สมชาย ใจดี");
 
 นี่คือโปรแกรมที่สมบูรณ์ซึ่งสร้าง `struct`, กำหนดค่า และแสดงผลข้อมูลออกมาทางหน้าจอ
 
-```c
+```bash title="create folder and file"
+mkdir c-develop
+cd c-developt
+vim struct_test.c
+gcc struct_test.c -o struct_test
+./struc_test
+```
+
+```c title="struct_test.c"
+//File struc_test.c
 #include <stdio.h>
 #include <string.h> // ต้อง include ไฟล์นี้เพื่อใช้ฟังก์ชัน strcpy
 
@@ -122,6 +131,8 @@ int main() {
     return 0;
 }
 ```
+
+![](./images/struct_test.png)
 
 **ผลลัพธ์ที่ได้:**
 
@@ -189,7 +200,12 @@ struct network_device wlan0 = {
 
 This program demonstrates both methods.
 
-```c
+```
+vim struct_initial_test.c
+gcc struct_initial_test.c -o struct_initial_test
+```
+```c title="struct_initial_test.c"
+//struct_initial_test.c
 #include <stdio.h>
 #include <string.h>
 
@@ -244,6 +260,8 @@ int main() {
     return 0;
 }
 ```
+
+![](./images/struct-initial.png)
 
 #### \#\#\# Program Output
 
