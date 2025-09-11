@@ -1,11 +1,11 @@
 # 03 Linux multiprocess Socket TCP, UDP communication
 
+- Tcp/ip
 ![](./images/tcp.png)
-
+- udp/ip
 ![](./images/udp.png)
 [https://cloud.tencent.com/developer/article/1774749](https://cloud.tencent.com/developer/article/1774749)
 
-ได้เลยครับ นี่คือตารางสรุปความแตกต่าง
 
 ### ตารางสรุปความแตกต่างระหว่าง Socket แบบ TCP และ UDP
 
@@ -22,15 +22,17 @@
 ![](./images/tcp.gif)
 
 ```bash title="command"
+sudo su -
+
 mkdir ipc-communicate
 cd ipc-communicate
-vim tcp-server.c
-vim tcp-client.c
-vim udp-server.c
-vim udp-client.c
+vim ipc_tcp_server.cpp
+vim ipc_tcp_client.cpp
+vim ipc_udp_server.cpp
+vim ipc_udp_client.cpp
 ```
 
-```c title="tcp-server.c"
+```c title="ipc_tcp_server.cpp"
 /*************************************************************************
   > File Name: ipc_tcp_server.cpp
   > Author: TianLun Song
@@ -124,7 +126,12 @@ int main(int argc,char** argv)
 }
 ```
 
-```c title="tcp-client.c"
+!!! info "คำอธิบาย ipc_tcp_server.c"
+    
+    [คำอธิบาย explain_tcp_server.md ](explain_tcp_server.md)
+
+
+```c title="ipc_tcp_client.cpp"
 /*************************************************************************
   > File Name: ipc_tcp_client.cpp
   > Author: TianLun Song
@@ -208,7 +215,12 @@ int main(int argc,char** argv)
 }
 ```
 
-```c title="udp-server.c"
+!!! info "คำอธิบาย ipc_tcp_client.cpp"
+    
+    [คำอธิบาย explain_tcp_client.md ](explain_tcp_client.md)
+
+
+```c title="ipc_udp_server.cpp"
 /*************************************************************************
   > File Name: ipc_udp_server.cpp
   > Author: TianLun Song
@@ -279,7 +291,12 @@ int main(int argc,char** argv)
 }
 ```
 
-```c title="udp-client.c"
+!!! info "คำอธิบาย ipc_udp_server.cpp"
+    
+    [คำอธิบาย explain_udp_server.md ](explain_udp_server.md)
+
+
+```c title="ipc_udp_client.cpp"
 /*************************************************************************
   > File Name: ipc_udp_client.cpp
   > Author: TianLun Song
@@ -356,6 +373,11 @@ int main(int argc,char** argv)
 }
 ```
 
+!!! info "คำอธิบาย ipc_udp_client.cpp"
+    
+    [คำอธิบาย explain_udp_client.md ](explain_udp_client.md)
+
+
 ## ให้ทำการทดสอบดังนี้ 👨‍💻
 
 เปิดหน้าต่างเทอร์มินัล (Terminal) สองหน้าต่างแยกกัน หน้าต่างหนึ่งสำหรับรันโปรแกรมฝั่ง Server และอีกหน้าต่างสำหรับรันโปรแกรมฝั่ง Client
@@ -369,21 +391,29 @@ int main(int argc,char** argv)
 รันคำสั่งเหล่านี้ในเทอร์มินัลเพื่อสร้างไฟล์โปรแกรม (executable files):
 
 ```bash
+# install g++
+
+sudo apt install g++
+
 # คอมไพล์ TCP Server
-g++ tcp-server.c -o tcp-server
+g++ ipc_tcp_server.cpp -o ipc_tcp_server
 
 # คอมไพล์ TCP Client
-g++ tcp-client.c -o tcp-client
+g++ ipc_tcp_client.cpp -o ipc_tcp_client
 
 # คอมไพล์ UDP Server
-g++ udp-server.c -o udp-server
+g++ ipc_udp_server.cpp -o ipc_udp_server
 
 # คอมไพล์ UDP Client
-g++ udp-client.c -o udp-client
+g++ ipc_udp_client.cpp -o ipc_udp_client
 ```
+Screen:
 
-หลังจากรันคำสั่งเหล่านี้ คุณจะได้ไฟล์ใหม่ 4 ไฟล์คือ `tcp-server`, `tcp-client`, `udp-server`, และ `udp-client`
+![](./images/cpp_compile.gif)
 
+หลังจากรันคำสั่งเหล่านี้ คุณจะได้ไฟล์ใหม่ 4 ไฟล์คือ `ipc_tcp_server`, `ipc_tcp_client`, `ipc_udp_server`, และ `ipc_udp_client`
+
+[อ่าน เปรียบเทียบ gcc และ g++](./explan_gcc_g++.md)
 -----
 
 ## 2\. การทดสอบ (Testing)
@@ -397,7 +427,7 @@ g++ udp-client.c -o udp-client
     <!-- end list -->
 
     ```bash
-    ./tcp-server
+    ./ipc_tcp_server
     ```
 
       * คุณจะเห็นว่าเทอร์มินัลนี้จะหยุดรอ ไม่แสดงผลอะไรออกมา
@@ -409,7 +439,7 @@ g++ udp-client.c -o udp-client
     <!-- end list -->
 
     ```bash
-    ./tcp-client
+    ./ipc_tcp_client
     ```
 
 **ผลลัพธ์ที่คาดหวัง:**
@@ -425,6 +455,9 @@ g++ udp-client.c -o udp-client
 
 ในการหยุดโปรแกรม ให้กด `Ctrl + C` ในแต่ละหน้าต่างเทอร์มินัล
 
+Screen:
+![](./images/tcp-server.gif)
+
 ### การทดสอบแบบ UDP (SOCK\_DGRAM)
 
 ขั้นตอนจะคล้ายกับ TCP แต่ใช้ไฟล์โปรแกรมของ UDP แทน
@@ -436,7 +469,7 @@ g++ udp-client.c -o udp-client
     <!-- end list -->
 
     ```bash
-    ./udp-server
+    ./ipc_udp_server
     ```
 
       * เทอร์มินัลจะหยุดรอรับข้อมูล
@@ -448,7 +481,7 @@ g++ udp-client.c -o udp-client
     <!-- end list -->
 
     ```bash
-    ./udp-client
+    ./ipc_udp_client
     ```
 
 **ผลลัพธ์ที่คาดหวัง:**
@@ -463,3 +496,6 @@ g++ udp-client.c -o udp-client
     ```
 
 ในการหยุดโปรแกรม ให้กด `Ctrl + C` ในแต่ละหน้าต่างเทอร์มินัลเช่นกันครับ
+
+Screen:
+![](./images/udp.gif)
