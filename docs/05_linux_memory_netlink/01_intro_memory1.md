@@ -1,5 +1,9 @@
 # 01 Introduction Memory management part 1
 
+![](./images/what-that-means-v0.webp)
+
+[https://www.phoronix.com/news/Linux-6.18-Likely-Sheaves](https://www.phoronix.com/news/Linux-6.18-Likely-Sheaves)
+
 !!! note "ประยุกต์การใช้ fzf ร่วมกับ vim"
       $ sudo apt install fzf  -y
       $ cd /usr/src/build/linux  
